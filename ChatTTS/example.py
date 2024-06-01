@@ -2,10 +2,10 @@ from ChatTTS import Chat
 import numpy as np
 import wave
 
-def main():
 
+def main():
     chat = Chat()
-    chat.load_models()
+    chat.load_models(source="local", local_path=r"D:\Python\TTSProject\ChatTTS\ChatTTS\models")
 
     r = chat.sample_random_speaker(seed=1112)
     params_infer_code = {
@@ -18,7 +18,7 @@ def main():
     wavs = chat.infer(texts, use_decoder=True, params_infer_code=params_infer_code)
 
     audio_data = np.array(wavs[0], dtype=np.float32)
-    sample_rate = 24000
+    sample_rate = 2400
     audio_data = (audio_data * 32767).astype(np.int16)
 
     with wave.open("test2.wav", "w") as wf:
@@ -26,4 +26,6 @@ def main():
         wf.setsampwidth(2)  # 2 bytes per sample
         wf.setframerate(sample_rate)
         wf.writeframes(audio_data.tobytes())
+
+
 main()
