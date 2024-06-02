@@ -2,6 +2,7 @@ import os
 import sys
 import platform
 import logging
+from functools import partial
 from omegaconf import OmegaConf
 import random
 import numpy as np
@@ -21,7 +22,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Chat:
-    def __init__(self):
+    def __init__(
+        self,
+    ):
         self.pretrain_models = {}
         self.normalizer = {}
         self.logger = logging.getLogger(__name__)
@@ -45,7 +48,13 @@ class Chat:
 
         return not not_finish
 
-    def load_models(self, source="huggingface",force_redownload=False, local_path="<LOCAL_PATH>", **kwargs,):
+    def load_models(
+        self,
+        source="huggingface",
+        force_redownload=False,
+        local_path="<LOCAL_PATH>",
+        **kwargs,
+    ):
         if source == "huggingface":
             hf_home = os.getenv("HF_HOME", os.path.expanduser("~/.cache/huggingface"))
             try:
@@ -79,18 +88,18 @@ class Chat:
         )
 
     def _load(
-            self,
-            vocos_config_path: str = None,
-            vocos_ckpt_path: str = None,
-            dvae_config_path: str = None,
-            dvae_ckpt_path: str = None,
-            gpt_config_path: str = None,
-            gpt_ckpt_path: str = None,
-            decoder_config_path: str = None,
-            decoder_ckpt_path: str = None,
-            tokenizer_path: str = None,
-            device: str = None,
-            compile: bool = False,
+        self,
+        vocos_config_path: str = None,
+        vocos_ckpt_path: str = None,
+        dvae_config_path: str = None,
+        dvae_ckpt_path: str = None,
+        gpt_config_path: str = None,
+        gpt_ckpt_path: str = None,
+        decoder_config_path: str = None,
+        decoder_ckpt_path: str = None,
+        tokenizer_path: str = None,
+        device: str = None,
+        compile: bool = False,
     ):
         if not device:
             device = select_device(4096)
@@ -145,15 +154,15 @@ class Chat:
         self.check_model()
 
     def infer(
-            self,
-            text,
-            skip_refine_text=False,
-            refine_text_only=False,
-            params_refine_text={},
-            params_infer_code={"prompt": "[speed_5]"},
-            use_decoder=True,
-            do_text_normalization=False,
-            lang=None,
+        self,
+        text,
+        skip_refine_text=False,
+        refine_text_only=False,
+        params_refine_text={},
+        params_infer_code={"prompt": "[speed_5]"},
+        use_decoder=True,
+        do_text_normalization=False,
+        lang=None,
     ):
 
         assert self.check_model(use_decoder=use_decoder)
@@ -186,7 +195,7 @@ class Chat:
                     < self.pretrain_models["tokenizer"].convert_tokens_to_ids(
                         "[break_0]"
                     )
-                    ]
+                ]
                 for i in text_tokens
             ]
             text = self.pretrain_models["tokenizer"].batch_decode(text_tokens)
@@ -214,7 +223,9 @@ class Chat:
 
         return wav
 
-    def sample_random_speaker(self):
+    def sample_random_speaker(
+        self,
+    ):
 
         dim = self.pretrain_models["gpt"].gpt.layers[0].mlp.gate_proj.in_features
         std, mean = self.pretrain_models["spk_stat"].chunk(2)
