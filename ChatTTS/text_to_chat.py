@@ -40,7 +40,7 @@ def text_to_speech(text, out_file, seed=123):
         wf.setsampwidth(2)  # 2 bytes per sample
         wf.setframerate(sample_rate)
         wf.writeframes(audio_data.tobytes())
-
+    return out_file
 
 if __name__ == '__main__':
     out_file = "demo1.wav"
